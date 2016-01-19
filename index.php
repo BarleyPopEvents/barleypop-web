@@ -1,15 +1,15 @@
 <?php
 	if (isset($_POST["submit"])) {
+		$ini = parse_ini_file("mail.ini");
 		$name = $_POST['name'];
 		$email = $_POST['email'];
 		$message = $_POST['message'];
-		$human = intval($_POST['human']);
-		//$from = 'BarleyPop Contact Form'; 
-		$to = 'info@barleypop.co.za'; 
-		$subject = 'Message from BarleyPop Contact Form ';
-		$from = 'From: BarleyPop Website <info@barleypop.co.za>' . "\r\n" .
-   					'Reply-To: info@barleypop.co.za' . "\r\n" .
-   '				X-Mailer: PHP/' . phpversion();
+		$human = intval($_POST['human']);	
+		$to = $ini['to_address']; 
+		$subject = $ini['subject_template'];
+		$from = 'From: ' . $ini['from_address'] . '\r\n' .
+   				'Reply-To: ' . $ini['reply_to'] . '\r\n' .
+   				'X-Mailer: PHP/' . phpversion();
 		
 		$body ="From: $name\n E-Mail: $email\n Message:\n $message";
 		// Check if name has been entered
@@ -30,14 +30,15 @@
 		if ($human !== 5) {
 			$errHuman = 'Your anti-spam is incorrect';
 		}
-// If there are no errors, send the email
-if (!$errName && !$errEmail && !$errMessage && !$errHuman) {
-	if (mail ($to, $subject, $body, $from)) {
-		$result='<div class="alert alert-success">Thank You! We will be in touch</div>';
-	} else {
-		$result='<div class="alert alert-danger">Sorry there was an error sending your message. Please try again later.</div>';
-	}
-}
+		
+		// If there are no errors, send the email
+		if (!$errName && !$errEmail && !$errMessage && !$errHuman) {
+			if (mail ($to, $subject, $body, $from)) {
+				$result='<div class="alert alert-success">Thank You! We will be in touch</div>';
+			} else {
+				$result='<div class="alert alert-danger">Sorry there was an error sending your message. Please try again later.</div>';
+			}
+		}
 	}
 ?>
 
